@@ -1,6 +1,10 @@
 package com.example.dewy
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,8 +15,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dewy.ui.pages.MainPage
 import com.example.dewy.ui.pages.SplashScreen
 import com.example.dewy.ui.theme.DewyTheme
-import com.example.dewy.viewmodels.MainViewModel
+import com.example.dewy.viewmodels.StreakViewModel
 import androidx.activity.viewModels
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.dewy.ui.pages.JournalPage
+import com.example.dewy.viewmodels.JournalViewModel
+import com.example.dewy.viewmodels.TipViewModel
 
 
 sealed class Screen(val route: String) {
@@ -28,28 +38,43 @@ sealed class Screen(val route: String) {
 
 class MainActivity : ComponentActivity() {
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val streakViewModel: StreakViewModel by viewModels()
+    private val tipViewModel: TipViewModel by viewModels()
+    private val journalViewModel: JournalViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DewyTheme {
-                NavigationSetUp(mainViewModel)
+                NavigationSetUp(
+                    streakViewModel,
+                    tipViewModel,
+                    journalViewModel
+                )
             }
         }
+
     }
 }
 
 @Composable
-fun NavigationSetUp(mainViewModel: MainViewModel){
+fun NavigationSetUp(
+    streakViewModel: StreakViewModel,
+    tipViewModel: TipViewModel,
+    journalViewModel: JournalViewModel
+){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route, builder = {
         composable(Screen.Splash.route){
             SplashScreen(navController)
         }
         composable(Screen.MainPage.route){
-            MainPage(navController, mainViewModel = mainViewModel)
+            MainPage(
+                navController,
+                streakViewModel,
+                tipViewModel
+            )
         }
         composable(Screen.Routines.route) {
             //TODO
@@ -58,7 +83,10 @@ fun NavigationSetUp(mainViewModel: MainViewModel){
             //TODO
         }
         composable(Screen.Journal.route) {
-            //TODO
+            JournalPage(
+                navController,
+                journalViewModel
+            )
         }
         composable(Screen.Settings.route){
             //TODO

@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -73,7 +76,7 @@ fun CustomTopBar(
     navHostController: NavHostController
 ){
     TopAppBar(
-        modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+        modifier = Modifier.wrapContentHeight().clip(RoundedCornerShape(10.dp)),
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -82,8 +85,7 @@ fun CustomTopBar(
             Text(
                 text = "Dewy",
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier.padding(start = 5.dp)
             )
         },
         actions = {
@@ -102,7 +104,7 @@ fun CustomTopBar(
 @Composable
 fun CustomBottomBar(
     navHostController: NavHostController
-){
+) {
     val items = listOf(
         BottomNavItem(
             title = "Home",
@@ -126,35 +128,39 @@ fun CustomBottomBar(
         )
     )
 
-    var selectedItem by remember { mutableIntStateOf(0) }
+    // Get the current route from NavHostController
+    val currentRoute = navHostController.currentBackStackEntryFlow.collectAsState(null).value?.destination?.route
 
     NavigationBar(
-        modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+        modifier = Modifier.wrapContentHeight().clip(RoundedCornerShape(10.dp)),
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSecondary,
         tonalElevation = NavigationBarDefaults.Elevation
-    ) { items.forEachIndexed { index, bottomNavItem ->
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = bottomNavItem.icon,
-                    contentDescription = bottomNavItem.title
+    ) {
+        items.forEach { bottomNavItem ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        painter = bottomNavItem.icon,
+                        contentDescription = bottomNavItem.title,
+                        modifier = Modifier.size(25.dp)
+                    )
+                },
+                label = { Text(bottomNavItem.title, style = MaterialTheme.typography.labelMedium) },
+                selected = currentRoute == bottomNavItem.route,
+                onClick = {
+                    if (currentRoute != bottomNavItem.route) {
+                        navHostController.navigate(bottomNavItem.route)
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                    unselectedTextColor = MaterialTheme.colorScheme.onBackground
                 )
-            },
-            label = { Text(bottomNavItem.title, style = MaterialTheme.typography.labelLarge) },
-            selected = selectedItem == index,
-            onClick = {
-                selectedItem = index
-                //TODO navHostController.navigate({})
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                unselectedTextColor = MaterialTheme.colorScheme.onBackground
             )
-        )
-    }
+        }
     }
 }
