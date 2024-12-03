@@ -56,16 +56,14 @@ fun MainPage(
     val streak by streakViewModel.streak.collectAsState()
     val tip by tipViewModel.tip.collectAsState()
 
-    MainScaffold(navHostController) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ){
-            StreakCard(streak, streakViewModel)
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ){
+        StreakCard(streak, streakViewModel)
 
-            Spacer(modifier = Modifier.fillMaxWidth().weight(1f))
+        Spacer(modifier = Modifier.fillMaxWidth().weight(1f))
 
-            TipCard(tip, tipViewModel)
-        }
+        TipCard(tip, tipViewModel)
     }
 }
 

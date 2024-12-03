@@ -3,6 +3,7 @@ package com.example.dewy.ui.pages
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.dewy.R
 import com.example.dewy.Screen
@@ -46,29 +48,32 @@ data class BottomNavItem(
 )
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScaffold(
-    navHostController: NavHostController,
-    showFloatingButton: Boolean = false,
+    navController: NavHostController,
     content: @Composable () -> Unit
-){
+) {
+    val currentRoute = navController.currentBackStackEntryFlow.collectAsState(null).value?.destination?.route
+    val isSplashScreen = currentRoute == Screen.Splash.route
+
     Scaffold(
-        topBar = { CustomTopBar(navHostController) },
-        bottomBar = { CustomBottomBar(navHostController) },
+        topBar = { if (!isSplashScreen) CustomTopBar(navController) },
+        bottomBar = { if (!isSplashScreen) CustomBottomBar(navController) },
         floatingActionButton = {}
     ) { paddingValues ->
-        Column (
+        val padding = if (!isSplashScreen) paddingValues else PaddingValues(0.dp)
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
-        ){
+        ) {
             content()
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

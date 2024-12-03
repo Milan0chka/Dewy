@@ -20,7 +20,10 @@ import androidx.activity.viewModels
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.dewy.ui.pages.JournalPage
+import com.example.dewy.ui.pages.MainScaffold
 import com.example.dewy.viewmodels.JournalViewModel
 import com.example.dewy.viewmodels.TipViewModel
 
@@ -47,24 +50,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DewyTheme {
-                NavigationSetUp(
-                    streakViewModel,
-                    tipViewModel,
-                    journalViewModel
-                )
+                val navController = rememberNavController()
+
+                MainScaffold(navController) {
+                    NavigationSetUp(
+                        navController,
+                        streakViewModel,
+                        tipViewModel,
+                        journalViewModel
+                    )
+                }
             }
         }
-
     }
 }
 
+
 @Composable
 fun NavigationSetUp(
+    navController: NavHostController,
     streakViewModel: StreakViewModel,
     tipViewModel: TipViewModel,
     journalViewModel: JournalViewModel
 ){
-    val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route, builder = {
         composable(Screen.Splash.route){
             SplashScreen(navController)

@@ -71,14 +71,13 @@ fun JournalPage(
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    MainScaffold(navHostController) {
-        Column {
-            TabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = Modifier
+    Column {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surface)
-            ) {
+        ) {
                 listOf("Weekly Record", "Track Progress").forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
@@ -88,12 +87,12 @@ fun JournalPage(
                 }
             }
 
-            when (selectedTabIndex) {
-                0 -> AddRecordTab(journalViewModel)
-                1 -> TrackProgressTab(journalViewModel)
-            }
+        when (selectedTabIndex) {
+            0 -> AddRecordTab(journalViewModel)
+            1 -> TrackProgressTab(journalViewModel)
         }
     }
+
 }
 
 @Composable
