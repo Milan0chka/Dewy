@@ -255,36 +255,6 @@ fun EmptyProgress(){
     }
 }
 
-@Composable
-fun InfoCard(content: @Composable () -> Unit){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ){
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                content()
-            }
-        }
-    }
-}
 
 @Composable
 fun JournalPhotoUpload(

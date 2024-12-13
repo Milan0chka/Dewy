@@ -211,16 +211,3 @@ fun TipCard(
         }
 }
 
-@Composable
-fun LoadingSpinner(
-    color: Color = MaterialTheme.colorScheme.primary
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(color = color)
-    }
-}

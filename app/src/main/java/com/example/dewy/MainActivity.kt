@@ -22,9 +22,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.dewy.ui.pages.CalendarPage
 import com.example.dewy.ui.pages.JournalPage
 import com.example.dewy.ui.pages.MainScaffold
+import com.example.dewy.ui.pages.RoutineBuilderScreen
+import com.example.dewy.ui.pages.RoutinePage
 import com.example.dewy.viewmodels.JournalViewModel
+import com.example.dewy.viewmodels.RoutineBuilderViewModel
+import com.example.dewy.viewmodels.RoutineViewModel
 import com.example.dewy.viewmodels.TipViewModel
 
 
@@ -35,6 +42,11 @@ sealed class Screen(val route: String) {
     object Routines : Screen("routines")
     object Journal : Screen("journal")
     object Settings : Screen("settings")
+    object RoutineBuilder : Screen("routine_builder/{type}"){
+        fun createRoute(type:String): String{
+            return "routine_builder/$type"
+        }
+    }
 
 }
 
@@ -44,6 +56,8 @@ class MainActivity : ComponentActivity() {
     private val streakViewModel: StreakViewModel by viewModels()
     private val tipViewModel: TipViewModel by viewModels()
     private val journalViewModel: JournalViewModel by viewModels()
+    private val routineViewModel: RoutineViewModel by viewModels()
+    private val routineBuilderViewModel: RoutineBuilderViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +71,9 @@ class MainActivity : ComponentActivity() {
                         navController,
                         streakViewModel,
                         tipViewModel,
-                        journalViewModel
+                        journalViewModel,
+                        routineViewModel,
+                        routineBuilderViewModel
                     )
                 }
             }
@@ -71,7 +87,9 @@ fun NavigationSetUp(
     navController: NavHostController,
     streakViewModel: StreakViewModel,
     tipViewModel: TipViewModel,
-    journalViewModel: JournalViewModel
+    journalViewModel: JournalViewModel,
+    routineViewModel: RoutineViewModel,
+    routineBuilderViewModel: RoutineBuilderViewModel
 ){
     NavHost(navController = navController, startDestination = Screen.Splash.route, builder = {
         composable(Screen.Splash.route){
@@ -85,10 +103,31 @@ fun NavigationSetUp(
             )
         }
         composable(Screen.Routines.route) {
-            //TODO
+            RoutinePage(
+                navController,
+                routineViewModel
+            )
         }
+
+        composable(
+            Screen.RoutineBuilder.route,
+            arguments = listOf(navArgument("type") { type = NavType.StringType })
+        ) { navBackStackEntry ->
+            val type = navBackStackEntry.arguments?.getString("type")
+            if (type != null) {
+                RoutineBuilderScreen(
+                    navController,
+                    type,
+                    routineViewModel,
+                    routineBuilderViewModel
+                )
+            }
+        }
+
         composable(Screen.Calendar.route) {
-            //TODO
+            CalendarPage(
+                navController
+            )
         }
         composable(Screen.Journal.route) {
             JournalPage(
