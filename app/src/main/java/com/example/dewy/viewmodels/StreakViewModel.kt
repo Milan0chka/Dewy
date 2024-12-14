@@ -24,7 +24,7 @@ class StreakViewModel(
     private val _streak = MutableStateFlow<Streak?>(null)
     val streak: StateFlow<Streak?> = _streak
 
-    private val _streakDanger = MutableStateFlow<Boolean>(true)
+    private val _streakDanger = MutableStateFlow(true)
     val streakDanger: StateFlow<Boolean> = _streakDanger
 
     init { fetchAndInitializeStreak() }

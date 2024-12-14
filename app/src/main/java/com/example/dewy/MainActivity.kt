@@ -28,6 +28,7 @@ import com.example.dewy.ui.pages.CalendarPage
 import com.example.dewy.ui.pages.JournalPage
 import com.example.dewy.ui.pages.MainScaffold
 import com.example.dewy.ui.pages.RoutineBuilderScreen
+import com.example.dewy.ui.pages.RoutineGuideScreen
 import com.example.dewy.ui.pages.RoutinePage
 import com.example.dewy.viewmodels.JournalViewModel
 import com.example.dewy.viewmodels.RoutineBuilderViewModel
@@ -45,6 +46,11 @@ sealed class Screen(val route: String) {
     object RoutineBuilder : Screen("routine_builder/{type}"){
         fun createRoute(type:String): String{
             return "routine_builder/$type"
+        }
+    }
+    object RoutineGuide : Screen("routine_guide/{type}"){
+        fun createRoute(type: String): String{
+            return "routine_guide/$type"
         }
     }
 
@@ -120,6 +126,20 @@ fun NavigationSetUp(
                     type,
                     routineViewModel,
                     routineBuilderViewModel
+                )
+            }
+        }
+
+        composable(
+            Screen.RoutineGuide.route,
+            arguments = listOf(navArgument("type") { type = NavType.StringType })
+        ) { navBackStackEntry ->
+            val type = navBackStackEntry.arguments?.getString("type")
+            if (type != null) {
+                RoutineGuideScreen(
+                    navController,
+                    type,
+                    routineViewModel
                 )
             }
         }

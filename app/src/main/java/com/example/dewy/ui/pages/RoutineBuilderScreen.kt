@@ -3,26 +3,20 @@ package com.example.dewy.ui.pages
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,20 +26,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -55,11 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,13 +54,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.dewy.Screen
 import com.example.dewy.data.models.Product
-import com.example.dewy.data.models.Routine
 import com.example.dewy.data.models.RoutineStep
 import com.example.dewy.viewmodels.RoutineBuilderViewModel
 import com.example.dewy.viewmodels.RoutineViewModel
 import java.util.Calendar
 
-//todo if added frequncy onn step >7 informarn than man wtf ypu are doing
 @SuppressLint("RememberReturnType")
 @Composable
 fun RoutineBuilderScreen(
@@ -143,7 +127,7 @@ fun RoutineBuilderScreen(
                                 preferredTime.value,
                                 steps){ success ->
                                 if (success){
-                                    routineViewModel.fetchRoutines()
+                                    routineViewModel.loadRoutines()
                                     currentPart++
                                 } else
                                     currentPart+=2
@@ -160,51 +144,6 @@ fun RoutineBuilderScreen(
     }
 
 
-}
-
-@Composable
-fun StepIndicator(currentIndex: Int, totalSteps: Int = 8) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(8f)
-        ) {
-            for (i in 1..totalSteps) {
-                Box(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .border(
-                            shape = CircleShape,
-                            width = 2.dp,
-                            color = if (i == currentIndex + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = i.toString(),
-                        color = if (i == currentIndex+1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
-
-                if (i < totalSteps) {
-                    Row(
-                        modifier = Modifier
-                            .height(2.dp)
-                            .weight(1f)
-                            .padding(horizontal = 5.dp)
-                            .background(MaterialTheme.colorScheme.surfaceDim)
-                    ){}
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -389,12 +328,18 @@ fun StepForm(
     var showDialog by remember { mutableStateOf(false) }
 
     val desc = when (step.stepName) {
-        "Cleanse" -> "Cleansing removes dirt, oil, and impurities from your skin, preventing clogged pores and breakouts."
-        "Hydrate" -> "Hydrating restores moisture to your skin, improving its texture and elasticity while preventing dryness."
-        "Treat" -> "Treating targets specific skin concerns, such as acne or dark spots, using active ingredients to address them effectively."
-        "Moisturize" -> "Moisturizing locks in hydration and protects your skin barrier, preventing dryness and irritation."
-        "Exfoliate" -> "Exfoliating removes dead skin cells, promoting a smoother complexion and preventing dullness and clogged pores."
-        "SPF" -> "Applying SPF protects your skin from harmful UV rays, preventing sunburn, premature aging, and skin cancer."
+        "Cleanse" -> "Cleansing removes dirt, oil, and impurities from your skin, preventing clogged pores and breakouts.\n" +
+                "Preferred frequency: 7-9 times per week"
+        "Hydrate" -> "Hydrating restores moisture to your skin, improving its texture and elasticity while preventing dryness.\n" +
+                "Preferred frequency: 7-9 times per week"
+        "Treat" -> "Treating targets specific skin concerns, such as acne or dark spots, using active ingredients to address them effectively.\n" +
+                "Preferred frequency: 5-7 times per week"
+        "Moisturize" -> "Moisturizing locks in hydration and protects your skin barrier, preventing dryness and irritation.\n" +
+                "Preferred frequency: 7-9 times per week"
+        "Exfoliate" -> "Exfoliating removes dead skin cells, promoting a smoother complexion and preventing dullness and clogged pores.\n" +
+                "Preferred frequency: 2-3 times per week"
+        "SPF" -> "Applying SPF protects your skin from harmful UV rays, preventing sunburn, premature aging, and skin cancer.\n" +
+                "Preferred frequency: 7 times per week"
         else -> "Unknown step"
     }
 

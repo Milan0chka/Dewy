@@ -3,6 +3,7 @@ package com.example.dewy.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dewy.data.models.Routine
+import com.example.dewy.data.models.RoutineDay
 import com.example.dewy.data.models.RoutineStep
 
 import com.example.dewy.data.repositories.RoutineRepository
@@ -10,24 +11,47 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 class RoutineViewModel(
     private val repository: RoutineRepository = RoutineRepository()
 ) : ViewModel() {
+    private val _routines = MutableStateFlow<List<Routine?>?>(null)
+    val routines: StateFlow<List<Routine?>?> = _routines
 
-    private val _morningRoutine = MutableStateFlow<Routine?>(null)
-    val morningRoutine: StateFlow<Routine?> = _morningRoutine
+    private val _todayRoutines = MutableStateFlow<List<RoutineDay?>?>(null)
+    val todayRoutines: StateFlow<List<RoutineDay?>?> = _todayRoutines
 
-    private val _eveningRoutines = MutableStateFlow<Routine?>(null)
-    val eveningRoutine: StateFlow<Routine?> = _eveningRoutines
+    private suspend fun fetchRoutines() {
+        val morning = repository.fetchRoutineByType("Morning")
+        val evening = repository.fetchRoutineByType("Evening")
+        _routines.value = listOf(morning, evening)
+    }
 
-    private val _notification = MutableStateFlow<String?>(null)
-    val notification: StateFlow<String?> = _notification
+    fun loadTodayRoutines() {
+        viewModelScope.launch(Dispatchers.Main) {
+            if (_routines.value == null) {
+                fetchRoutines()
+            }
 
-    fun fetchRoutines() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _morningRoutine.value = repository.fetchRoutineByType("Morning")
-            _eveningRoutines.value = repository.fetchRoutineByType("Evening")
+            val today = LocalDate.now()
+            val dayOfWeekIndex = (today.dayOfWeek.value - 1) % 7
+
+            val todayMorningRoutine =
+                _routines.value?.getOrNull(0)?.days?.getOrNull(dayOfWeekIndex)
+
+            val todayEveningRoutine =
+                _routines.value?.getOrNull(1)?.days?.getOrNull(dayOfWeekIndex)
+
+            _todayRoutines.value = listOf(todayMorningRoutine, todayEveningRoutine)
+        }
+    }
+
+    fun loadRoutines(){
+        viewModelScope.launch(Dispatchers.Main) {
+            fetchRoutines()
         }
     }
 
