@@ -83,9 +83,6 @@ fun RoutineBuilderScreen(
     routineViewModel: RoutineViewModel,
     routineBuilderViewModel: RoutineBuilderViewModel
 ) {
-    LaunchedEffect(routineType){
-        routineBuilderViewModel.setRoutineType(routineType)
-    }
     val isBuilding by routineBuilderViewModel.isBuilding
 
     var currentPart by remember { mutableIntStateOf(0) }
@@ -256,14 +253,31 @@ fun RoutineDescription(
         )
         Text(
             text = if (routineType == "Morning") "Morning skincare routine is generally lighter. It is more moisturizing and protecting, rather than treating!\nIn the end, it is recommended to apply SPF. "
-            else "PIZDA",
+            else "Evening routine is usually more heavy. It prioritizes treatments like exfoliation and active ingredients to address specific concerns, promoting skin renewal while you sleep",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
             lineHeight = 25.sp
         )
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)){
+            Text(
+                text = "Instructions:",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                lineHeight = 20.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "Add all products you are planing to use during the week and specify their frequency of use.\nDewy will then analyze your products, and build balanced weekly skincare routine.",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                lineHeight = 20.sp,
+            )
 
-        FormButton(onNext, "Start")
+            FormButton(onNext, "Start")
+        }
     }
 }
 
@@ -385,7 +399,7 @@ fun StepForm(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {

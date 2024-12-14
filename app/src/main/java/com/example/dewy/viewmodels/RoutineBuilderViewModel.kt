@@ -20,17 +20,9 @@ class RoutineBuilderViewModel(
     private val _isBuilding = mutableStateOf(false)
     val isBuilding: State<Boolean> get() = _isBuilding
 
-    private val _currentRoutineType = mutableStateOf("")
-    val currentRoutineType: State<String> get() = _currentRoutineType
-
     // Used to toggle day placements to make algorithm spreading product more evenly
     private var currentTwoDayStartIndex = 0
     private var currentThreeDayStartIndex = 0
-
-
-    fun setRoutineType(type: String) {
-        _currentRoutineType.value = type
-    }
 
     fun buildRoutine(
         type: String,

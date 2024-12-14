@@ -15,20 +15,19 @@ class RoutineViewModel(
     private val repository: RoutineRepository = RoutineRepository()
 ) : ViewModel() {
 
-    private val _routines = MutableStateFlow<List<Routine>?>(null)
-    val routines: StateFlow<List<Routine>?> = _routines
+    private val _morningRoutine = MutableStateFlow<Routine?>(null)
+    val morningRoutine: StateFlow<Routine?> = _morningRoutine
+
+    private val _eveningRoutines = MutableStateFlow<Routine?>(null)
+    val eveningRoutine: StateFlow<Routine?> = _eveningRoutines
 
     private val _notification = MutableStateFlow<String?>(null)
     val notification: StateFlow<String?> = _notification
 
     fun fetchRoutines() {
         viewModelScope.launch(Dispatchers.IO) {
-            val morningRoutine = repository.fetchRoutineByType("Morning")
-            val eveningRoutine = repository.fetchRoutineByType("Evening")
-
-            val routinesList = listOfNotNull(morningRoutine, eveningRoutine)
-
-            _routines.value = if (routinesList.isEmpty()) emptyList() else routinesList
+            _morningRoutine.value = repository.fetchRoutineByType("Morning")
+            _eveningRoutines.value = repository.fetchRoutineByType("Evening")
         }
     }
 
