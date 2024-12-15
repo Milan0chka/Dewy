@@ -46,7 +46,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.dewy.R
 import com.example.dewy.data.models.Record
-import com.example.dewy.tools.checkAndRequestPermissions
 import com.example.dewy.viewmodels.JournalViewModel
 import com.example.dewy.viewmodels.StreakViewModel
 import java.io.File
@@ -320,18 +319,14 @@ fun JournalPhotoUpload(
                 text = { Text("Take photo") },
                 onClick = {
                     expanded = false
-                    checkAndRequestPermissions(context) {
-                        cameraLauncher.launch(null)
-                    }
+                    cameraLauncher.launch(null) // Directly launch the camera
                 }
             )
             DropdownMenuItem(
                 text = { Text("Choose from gallery") },
                 onClick = {
                     expanded = false
-                    checkAndRequestPermissions(context) {
-                        galleryLauncher.launch("image/*")
-                    }
+                    galleryLauncher.launch("image/*") // Directly launch the gallery
                 }
             )
             DropdownMenuItem(
